@@ -7,9 +7,9 @@ import net.guides.employeeservice.dto.EmployeeDto;
 import net.guides.employeeservice.entity.Employee;
 import net.guides.employeeservice.mapper.EmployeeMapper;
 import net.guides.employeeservice.repository.EmployeeRepository;
+import net.guides.employeeservice.service.APIClient;
 import net.guides.employeeservice.service.EmployeeService;
 import org.springframework.stereotype.Service;
-import org.springframework.web.reactive.function.client.WebClient;
 
 @Service
 @AllArgsConstructor
@@ -17,7 +17,7 @@ public class EmployeeServiceImpl implements EmployeeService {
 
     private EmployeeRepository employeeRepository;
 
-    private WebClient webClient;
+    private APIClient apiClient;
 
     @Override
     public EmployeeDto saveEmployee(EmployeeDto employeeDto) {
@@ -33,11 +33,7 @@ public class EmployeeServiceImpl implements EmployeeService {
 
         Employee employee = employeeRepository.findById(employeeId).get();
 
-        DepartmentDto departmentDto = webClient.get()
-                .uri("http://localhost:8080/api/departments/" + employee.getDepartmentCode())
-                .retrieve()
-                .bodyToMono(DepartmentDto.class)
-                .block();
+        DepartmentDto departmentDto = apiClient.getDepartment(employee.getDepartmentCode());
 
         APIResponseDto apiResponseDto = new APIResponseDto();
         apiResponseDto.setEmployee(EmployeeMapper.mapToEmployeeDto(employee));
