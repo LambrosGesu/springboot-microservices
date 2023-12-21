@@ -5,6 +5,7 @@ import lombok.AllArgsConstructor;
 import net.guides.employeeservice.dto.APIResponseDto;
 import net.guides.employeeservice.dto.DepartmentDto;
 import net.guides.employeeservice.dto.EmployeeDto;
+import net.guides.employeeservice.dto.OrganizationDto;
 import net.guides.employeeservice.entity.Employee;
 import net.guides.employeeservice.mapper.EmployeeMapper;
 import net.guides.employeeservice.repository.EmployeeRepository;
@@ -43,11 +44,18 @@ public class EmployeeServiceImpl implements EmployeeService {
                 .bodyToMono(DepartmentDto.class)
                 .block();
 
+        OrganizationDto organizationDto = webClient.get()
+                .uri("http://localhost:8083/api/organizations/" + employee.getOrganizationCode())
+                .retrieve()
+                .bodyToMono(OrganizationDto.class)
+                .block();
+
 //        DepartmentDto departmentDto = apiClient.getDepartment(employee.getDepartmentCode());
 
         APIResponseDto apiResponseDto = new APIResponseDto();
         apiResponseDto.setEmployee(EmployeeMapper.mapToEmployeeDto(employee));
         apiResponseDto.setDepartment(departmentDto);
+        apiResponseDto.setOrganizationDto(organizationDto);
         return apiResponseDto;
     }
 
